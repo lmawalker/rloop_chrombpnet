@@ -269,31 +269,21 @@ def train_bias_pipeline(args):
 		fpx = args.file_prefix+"_"
 	else:
 		fpx = ""
-		
-	# Shift bam and convert to bigwig
-	import chrombpnet.helpers.preprocessing.reads_to_bigwig as reads_to_bigwig	
+
 	args.output_prefix = os.path.join(args.output_dir,"auxiliary/{}data".format(fpx))
-	args.plus_shift = None
-	args.minus_shift = None
-	reads_to_bigwig.main(args)
-	
-	# QC bigwig
-	import chrombpnet.helpers.preprocessing.analysis.build_pwm_from_bigwig as build_pwm_from_bigwig	
-	args.bigwig = os.path.join(args.output_dir,"auxiliary/{}data_unstranded.bw".format(fpx))
-	args.output_prefix = os.path.join(args.output_dir,"evaluation/{}bw_shift_qc".format(fpx))
-	folds = json.load(open(args.chr_fold_path))
-	assert(len(folds["valid"]) > 0) # validation list of chromosomes is empty
-	args.chr = folds["valid"][0]
-	args.pwm_width=24
-	build_pwm_from_bigwig.main(args)
-	
+
+	# Copy bigwig
+	print("Copying Bigwig")
+	import shutil
+	copied_bigwig = f"{args.output_prefix}_unstranded.bw"
+	shutil.copyfile(args.bigwig, copied_bigwig)
 
 	# fetch hyperparameters for training
 	import chrombpnet.helpers.hyperparameters.find_bias_hyperparams as find_bias_hyperparams
 	args_copy = copy.deepcopy(args)
 	args_copy.output_prefix = os.path.join(args.output_dir,"auxiliary/{}".format(fpx))
 	find_bias_hyperparams.main(args_copy)
-	
+
 	# separating models from logs
 	os.rename(os.path.join(args.output_dir,"auxiliary/{}bias_model_params.tsv".format(fpx)),os.path.join(args.output_dir,"logs/{}bias_model_params.tsv".format(fpx)))
 	os.rename(os.path.join(args.output_dir,"auxiliary/{}bias_data_params.tsv".format(fpx)),os.path.join(args.output_dir,"logs/{}bias_data_params.tsv".format(fpx)))
@@ -305,9 +295,9 @@ def train_bias_pipeline(args):
 	if args_copy.architecture_from_file is None:
 		args_copy.architecture_from_file = 	bpnet_model.__file__
 	args_copy.peaks = "None"
-	args_copy.nonpeaks = os.path.join(args_copy.output_dir,"auxiliary/{}filtered.bias_nonpeaks.bed".format(fpx))
 	args_copy.output_prefix = os.path.join(args_copy.output_dir,"models/{}bias".format(fpx))
 	args_copy.params = os.path.join(args_copy.output_dir,"logs/{}bias_model_params.tsv".format(fpx))
+	'''	
 	train.main(args_copy)
 	
 	# separating models from logs
@@ -375,7 +365,7 @@ def train_bias_pipeline(args):
 	args_copy = copy.deepcopy(args)
 	args_copy.input_dir = args_copy.output_dir
 	args_copy.command = args_copy.cmd_bias
-	make_html_bias.main(args_copy)
+	make_html_bias.main(args_copy)'''
 
 def bias_model_qc(args):
 
