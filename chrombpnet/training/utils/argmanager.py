@@ -4,7 +4,7 @@ def update_data_args(parser):
     parser.add_argument("-g", "--genome", type=str, required=True, help="Genome fasta")
     parser.add_argument("-b", "--bigwig", type=str, required=False, help="Bigwig of tn5 insertions. Ensure it is +4/-4 shifted")
     parser.add_argument("-p", "--peaks", type=str, default="None", help="10 column bed file of peaks. Sequences and labels will be extracted centered at start (2nd col) + summit (10th col).")
-    parser.add_argument("-n", "--nonpeaks", type=str, default="None" ,help="10 column bed file of non-peak regions, centered at summit (10th column)")
+    #parser.add_argument("-n", "--nonpeaks", type=str, default="None" ,help="10 column bed file of non-peak regions, centered at summit (10th column)")
     parser.add_argument("-o", "--output_prefix", type=str, required=True, help="Output prefix")
     parser.add_argument("-fl", "--chr_fold_path", type=str, required=True, help="Fold information - see splits.py to set folds")
 
@@ -28,7 +28,7 @@ def fetch_train_args():
     update_model_args(parser)
     args = parser.parse_args()
 
-    assert((args.peaks.lower() != "none") or (args.nonpeaks.lower() != "none")) #Both peaks and nonpeaks are empty" 
+    assert(args.peaks.lower() != "none") # peaks are empty"
 
     return args
 
@@ -42,7 +42,7 @@ def fetch_predict_args():
     parser.add_argument("-ol", "--outputlen", type=int, default=1000, help="Prediction output length")
     args = parser.parse_args()
 
-    assert((args.peaks.lower() != "none") or (args.nonpeaks.lower() != "none")) #Both peaks and nonpeaks are empty" 
+    assert(args.peaks.lower() != "none") # peaks are empty"
     assert(args.inputlen % 2 ==0)
     assert(args.outputlen % 2 ==0)
 
