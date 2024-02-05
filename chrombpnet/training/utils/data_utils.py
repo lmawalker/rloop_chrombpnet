@@ -52,12 +52,12 @@ def get_seq_cts_coords(peaks_df, genome, bw, input_width, output_width, peaks_bo
     coords = get_coords(peaks_df, peaks_bool)
     return seq, cts, coords
 
-def load_data(bed_regions, nonpeak_regions, genome_fasta, cts_bw_file, inputlen, outputlen, max_jitter):
+def load_data(bed_regions, genome_fasta, cts_bw_file, inputlen, outputlen, max_jitter):
     """
-    Load sequences and corresponding base resolution counts for training, 
+    Load sequences and corresponding base resolution counts for training,
     validation regions in peaks and nonpeaks (2 x 2 x 2 = 8 matrices).
 
-    For training peaks/nonpeaks, values for inputlen + 2*max_jitter and outputlen + 2*max_jitter 
+    For training peaks, values for inputlen + 2*max_jitter and outputlen + 2*max_jitter
     are returned centered at peak summit. This allows for jittering examples by randomly
     cropping. Data of width inputlen/outputlen is returned for validation
     data.
@@ -68,33 +68,20 @@ def load_data(bed_regions, nonpeak_regions, genome_fasta, cts_bw_file, inputlen,
     cts_bw = pyBigWig.open(cts_bw_file)
     genome = pyfaidx.Fasta(genome_fasta)
 
-    train_peaks_seqs=None
-    train_peaks_cts=None
-    train_peaks_coords=None
-    train_nonpeaks_seqs=None
-    train_nonpeaks_cts=None
-    train_nonpeaks_coords=None
+    train_peaks_seqs = None
+    train_peaks_cts = None
+    train_peaks_coords = None
 
     if bed_regions is not None:
         train_peaks_seqs, train_peaks_cts, train_peaks_coords = get_seq_cts_coords(bed_regions,
-                                              genome,
-                                              cts_bw,
-                                              inputlen+2*max_jitter,
-                                              outputlen+2*max_jitter,
-                                              peaks_bool=1)
-    
-    if nonpeak_regions is not None:
-        train_nonpeaks_seqs, train_nonpeaks_cts, train_nonpeaks_coords = get_seq_cts_coords(nonpeak_regions,
-                                              genome,
-                                              cts_bw,
-                                              inputlen,
-                                              outputlen,
-                                              peaks_bool=0)
-
+                                                                                   genome,
+                                                                                   cts_bw,
+                                                                                   inputlen + 2 * max_jitter,
+                                                                                   outputlen + 2 * max_jitter,
+                                                                                   peaks_bool=1)
 
 
     cts_bw.close()
     genome.close()
 
-    return (train_peaks_seqs, train_peaks_cts, train_peaks_coords,
-            train_nonpeaks_seqs, train_nonpeaks_cts, train_nonpeaks_coords)
+    return (train_peaks_seqs, train_peaks_cts, train_peaks_coords)
