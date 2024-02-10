@@ -10,7 +10,8 @@ def fetch_data_and_model_params_based_on_mode(mode, args, parameters):
         inputlen = int(parameters["inputlen"])
         outputlen = int(parameters["outputlen"])
         max_jitter = int(parameters["max_jitter"])
-        add_revcomp = True
+        #add_revcomp = True
+        add_revcomp = False
         shuffle_at_epoch_start = True
 
     elif mode == "valid":
